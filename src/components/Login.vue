@@ -235,22 +235,5 @@ export default {
     background-position: center;
 }
 
-.primary-nav a {
-    display: block;
-    text-align: center;
-    position: relative;
-    text-decoration: none;
-}
-.primary-nav a:after {
-    content: "";
-    display: block;
-    margin: auto;
-    height: 2px;
-    width: 0px;
-    transition: all .8s;
-}
-.primary-nav a:hover:after {
-    width: 100%;
-    background: var(--blanco);
-}
+
 </style>
