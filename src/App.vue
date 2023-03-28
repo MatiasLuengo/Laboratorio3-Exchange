@@ -14,7 +14,7 @@
         <router-link class="logo" to="/"><h1 class="logo__nombre">Utn<span>Wallet</span></h1></router-link>
       </div>
 
-      <nav class="navegacion-principal primary-nav">
+      <nav class="primary-nav">
         <!-- <a href="aboutUs.html" class="navegacion__enlace">Nosotros</a> -->
         <router-link to="/about" class="navegacion__enlace">Nosotros</router-link>
         <!-- <a href="investments.html" class="navegacion__enlace">Inversiones</a> -->  
@@ -113,23 +113,7 @@ Body{
     color: var(--blanco);
     text-decoration: none;
 }
-.navegacion-principal{
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 0.5rem;
-    align-items: center;
-}
-@media (min-width: 480px) {
-    .navegacion-principal{
-        flex-direction: row;
-    }  
-}
-.navegacion-principal a{
-    font-size: 2rem;
-    font-weight: 700;
-    margin-left: 2rem;
-}
+
 /* .navegacion-principal a:hover {
 color: var(--secundario);
 } */
@@ -209,6 +193,39 @@ img{
     max-width: 60%;
 }
 
-
-
+/* .primary-nav a {
+    display: block;
+    text-align: center;
+    position: relative;
+    text-decoration: none;
+} */
+.primary-nav a:after {
+    content: "";
+    display: block;
+    margin: auto;
+    height: 2px;
+    width: 0px;
+    transition: all .8s;
+}
+.primary-nav a:hover:after {
+    width: 100%;
+    background: var(--blanco);
+}
+.primary-nav{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 0.5rem;
+    align-items: center;
+}
+@media (min-width: 480px) {
+    .primary-nav{
+        flex-direction: row;
+    }  
+}
+.primary-nav a{
+    font-size: 2rem;
+    font-weight: 700;
+    margin-left: 2rem;
+}
 </style>
