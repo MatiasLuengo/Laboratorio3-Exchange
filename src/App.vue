@@ -15,9 +15,7 @@
       </div>
 
       <nav class="primary-nav">
-        <!-- <a href="aboutUs.html" class="navegacion__enlace">Nosotros</a> -->
         <router-link to="/about" class="navegacion__enlace">Nosotros</router-link>
-        <!-- <a href="investments.html" class="navegacion__enlace">Inversiones</a> -->  
         <router-link to="/contact" class="navegacion__enlace">Contacto</router-link>      
       </nav>
 
