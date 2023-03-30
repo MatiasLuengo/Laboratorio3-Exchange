@@ -16,6 +16,11 @@ const routes = [
     path: '/contact',
     name: 'contact',
     component: () => import('../views/ContactView.vue')
+  },
+  {
+    path: '/panel',
+    name: 'panel',
+    component: () => import('../views/purchaseSaleView.vue')
   }
 ]
 
