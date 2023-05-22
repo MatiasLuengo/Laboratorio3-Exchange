@@ -1,236 +1,273 @@
 <template>
-    <section>
+    <section id="nueva-venta">
       <div class="conteiner">
-        <h2 class="sale-tittle">Venta</h2>
+        <div class="sale-conteiner">
+          <h2 class="sale-tittle">Venta</h2>
+          <i class='bx bxs-chevron-left' ></i>
+        </div>
+        <div class="alertConteiner" v-if="errors">
+          <div class="alert" v-for="error in errors">
+            <p class="">{{error}}</p>
+          </div>
+        </div>
         <div class="body-conteiner">
-          <div class="sale-part">
+          <div class="sale-part miniConteiner">
             <div class="tittle">Cryptomoneda a vender</div>
-            <form class="form">
-              <input id="criptoMoneySale" type="number" class="cantidad" placeholder="Cantidad a vender" @change="(e) => handlerChangeCryptoCountSale(e)"/>
-              <select class="select" @change="(e) => handlerChangeSelectCriptoSale(e)">
-                <option value="">-</option>
-                <option v-for="elem in store.state.topCryptos" :value="elem.symbol">
-                  <p>{{ elem.name }}</p>
-                </option>
-              </select>
+            <form class="form" @submit.prevent="obtenerCotizacionVenta">
+              <input id="criptoMoneySale" type="string" v-model.number="volumen" class="cantidad" placeholder="Cantidad a vender"/>
+              <select class="select" id="coin" v-model="coin" @change="handlerChangeSelectCriptoSale($event)">
+                <option selected disabled >Criptos..</option>
+                <option value="btc">BTC</option>
+                <option value="eth">ETH</option>
+                <option value="usdt">USDT</option>
+            </select>
+            <button>Optener Cotizacion</button>
             </form>
           </div>
-  
-          <div
-            class="flex flex-col justify-center items-center w-[20%] h-[45%] bg-white rounded-lg shadow-sm shadow-gray-500"
-          >
-            <div class="w-full text-sm pl-2">En la billetera tienes</div>
-            <p>{{ store.state.criptoSaved }}</p>
+          <div class="miniConteiner yourWallet tittle">
+            <p>En la billetera tienes:</p>
+            <p>{{ wallet }}</p>
           </div>
-  
-          <div class="sale-conteiner">
-            <div class="">Tú vendes</div>
-            <div class="convert">
-              <p>
-                {{ store.state.convertedMoneySale }}
-              </p>
+            <div class="miniConteiner yourSale tittle">Tú vendes
+              <div v-if="yourBudget">
+                <p> $ {{ yourBudget }} </p> 
+              </div>
             </div>
-          </div>
-  
-          <div class="sale-conteiner">
+          <div class="day-conteiner miniConteiner">
             <div class="tittle">Día de venta</div>
             <input id="diaVenta" type="date" class="pl-2" required />
           </div>
-  
-          <div class="buy-now">
-            <button @click="($event) => handlerSubmitSale()">Vender Ahora</button>
+          <div class="buy-now miniConteiner">
+            <button @click="sale">Vender Ahora</button>
           </div>
         </div>
       </div>
     </section>
   </template>
   
-  <script setup>
-  import Joi from "joi";
-  import userService from "../services/user.service";
-  import store from "../store";
-  
-  function handlerSubmitSale() {
-    let daySale = document.getElementById("diaVenta").value;
-    daySale = {
-      day: new Date(daySale).getDate(),
-      month: new Date(daySale).getMonth(),
-      year: new Date(daySale).getFullYear(),
-      hour: new Date(daySale).getHours(),
-      minute: new Date(daySale).getMinutes(),
-    };
-    const criptoMoneyCount = store.state.criptoCountSale;
-    const criptoMoneyType = store.state.criptoSelectedSale;
-    const criptoMoneyToPay = store.state.convertedMoneySale
-      .replace("$ ", "")
-      .trim();
-  
-    const validObject = Joi.object({
-      type: Joi.string().required(),
-      amount: Joi.number().min(0).max(Number.MAX_VALUE).required(), //cantidad de monedas que hay de esa cripto en la billetera
-      date: Joi.object({
-        day: Joi.number().min(0).max(31).required(),
-        month: Joi.number().min(0).max(12).required(),
-        year: Joi.number().min(2023).max(2023).required(),
-        hour: Joi.number().min(0).max(23).required(),
-        minute: Joi.number().min(0).max(59).required(),
-      }),
-      money: Joi.number().min(0).max(Number.MAX_VALUE).required(),
-    });
-  
-    const { error, value } = validObject.validate({
-      type: criptoMoneyType,
-      amount: criptoMoneyCount,
-      date: daySale,
-      money: criptoMoneyToPay,
-    });
-  
-    if (error) {
-      let keyError = error.message.match(/"(\\.|[^"\\])*"/g);
-      const errorsToRender = {
-        amount: "La cantidad de criptomonedas ingresadas no son válidas",
-        date: "El dia ingresado es inválido o nulo.",
-        type: "Se debe seleccionar un tipo de criptomoneda a vender",
-        money: "La cantidad de dinero a pagar es inválida",
-        default: "Ah ocurrido un error, intentelo mas tarde",
-      }; // Objecto-lista de todos los errores admitidos
-  
-      if (keyError) {
-        keyError = keyError.toString().replace(/"/g, "").split(".")[0]; // Separo la key del error de todo el mensaje.
-        alert(errorsToRender[keyError] || errorsToRender["default"]);
-        return;
-      }
-      alert(errorsToRender["default"]); // error default por si todo falla
-      return;
-    } else if (value.amount > store.state.criptoSaved) {
-      alert("No se puede vender mas de lo que hay en la billetera");
-      return;
-    } else if (value.amount === 0) {
-      alert("La cantidad de criptomonedas ingresadas no son validas.");
-      return;
-    }
-  
-    userService
-      .createSale({
-        user_id: store.state.userId,
-        action: "sale",
-        crypto_code: criptoMoneyType,
-        crypto_amount: criptoMoneyCount,
-        money: criptoMoneyToPay,
-        datetime: `${daySale.day}-${daySale.month + 1}-${daySale.year} ${
-          daySale.hour
-        }:${daySale.minute}`,
-      })
-      .then(() => {
-        userService.getHistory(store.state.userId).then((history) => {
-          store.commit("changeUserHistory", history);
+  <script>
+    import store from "./../store";
+    import userService from './../services/user.service';
+    import criptoYaInstance from '../services/criptoYa.connection.service';
+
+    export default{
+      data(){
+        return{
+          coin: "",
+          volumen: null,
+          yourBudget: null,
+          errors: [],
+          wallet: null
+        }
+      },
+      methods:{
+        obtenerCotizacionVenta(){
+          criptoYaInstance.getCriptoData(this.coin, this.volumen)
+          .then(response => {
+            let total = Number(response.bid)*Number(this.volumen);
+            this.yourBudget = total;
+          })
+        },
+        handlerChangeSelectCriptoSale(cripto){
+          store.commit("changeCriptoSaved", cripto.target.value);
+          this.wallet = store.state.criptoSaved;
+        },
+        sale(){
+          this.errors = [];
+          let dayPurchase = document.getElementById("diaVenta").value;
+          if (dayPurchase == "") {
+            this.errors.push("Es necesario la fecha de venta") ;
+          }
+          dayPurchase = {
+              day: new Date(dayPurchase).getDate(),
+              month: new Date(dayPurchase).getMonth(),
+              year: new Date(dayPurchase).getFullYear(),
+              hour: new Date(dayPurchase).getHours(),
+              minute: new Date(dayPurchase).getMinutes(),
+            };
+          if(dayPurchase.year < new Date().getFullYear() || 
+            dayPurchase.month < new Date().getMonth() ||
+            (dayPurchase.day +  1) < new Date().getDate()){
+            this.errors.push("La fecha no puede ser anterior al dia de hoy") ;
+          }
+          if(this.volumen == null){
+            this.errors.push("Es necesario la cantidad a vender") ;
+          }if (this.coin == "") {
+            this.errors.push("Es necesario la cripto a vender")  ;
+          }
+          if(this.wallet < this.volumen){
+            this.errors.push("No tiene esa cantidad en la cartera")  ;
+          }
+          if(!this.errors.length > 0){
+          store.commit("changeBudget", null)
+          criptoYaInstance.getCriptoData(this.coin, this.volumen)
+          .then(response => {
+            let total = Number(response.bid)*Number(this.volumen);
+            store.commit("changeBudget", total)
+            this.yourBudget = total;
+          })
+          userService.createSale({
+            user_id: store.state.userId,
+            action: "sale",
+            crypto_code: this.coin,
+            crypto_amount: this.volumen,
+            money: this.yourBudget,
+            datetime: `${dayPurchase.day + 1}-${dayPurchase.month + 1}-${dayPurchase.year} ${dayPurchase.hour}:${dayPurchase.minute}`,
+          })
+          .then(() => {
+            userService.getHistory(store.state.userId).then((history) => {
+              store.commit("changeUserHistory", history);
+            });
+          })   
+          .then(() => {
+          this.coin= "";
+          this.volumen= null;
+          this.yourBudget= null;
         });
         alert("Venta de criptomoneda correcta");
-      });
-  }
-  
-  function handlerChangeCryptoCountSale(event) {
-    store.commit("changeCriptoCountSale", event.target.value);
-  }
-  
-  function handlerChangeSelectCriptoSale(event) {
-    store.commit("changeCriptoSelectedSale", event.target.value);
-    store.commit("changeCriptoSaved", event.target.value);
-  }
+      }
+      }
+      },
+      computed:{
+      }
+    }
   </script>
 
 <style scoped>
-.conteiner{
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 50px;
-  background-color: lightskyblue;
+i{
+  font-size: 40px;
+  color: rgb(236, 66, 66);
 }
-.sale-tittle{
-  /* select-none */
-  font-weight: bold;
-  font-size: 50px;
-  color: black;
-}
-.body-conteiner{
+.sale-conteiner{
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 70%;
   height: 30%;
-  gap: 40px;
+  gap: 10px;
 }
-.sale-part{
+button{
+  cursor: pointer;
+  height: 40px;
+  width: 120px;
+  border-radius: 6px;
+  background-color: rgb(212, 238, 232);
+}
+button:hover{
+  background-color: rgb(220, 241, 235);
+}
+.alertConteiner{
+  width: 50%;
+}
+.alert{
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 30%;
-  height: 45%;
-  background-color: white;
-  border-radius: 20px;
-/*   box-shadow: ;
- */}
+  width: 100%;
+  height: auto;
+  background-color: gainsboro;
+  margin: auto;
+  margin-bottom: 5px;
+}
+.alert p{
+  color: red;
+  font-size: small;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+#nueva-venta{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+.conteiner{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 90%;
+  height: 300px;
+  margin: auto;
+  margin-top: 40px;
+  background-color: rgba(8, 161, 221, 0.10);
+  border-radius: 6px;
+}
+.miniConteiner{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: auto;
+  margin: auto;
+  height: 60px;
+  background-color: rgb(249, 249, 249);
+  border-radius: 6px;
+  padding: 10px 5px;
+  min-height: 45%;
+ }
+.body-conteiner{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 85%;
+  height: 50%;
+  gap: 40px;
+}
  .tittle{
   width: 100%;
-  padding-left: 5px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-weight: bold;
+  text-align: center;
+ }
+ .tittle p{
+  text-align: center;
  }
  .form{
-  /* outline-none*/
   display: flex;
-  padding-left: 5px;
+  gap: 5px;
  }
  .cantidad{
-  /* outline-none */
   width: 60%;
   text-align: center;
  }
+ .yourSale{
+  width: 15%;
+ }
+ .yourSale p{
+  color: black;
+ }
+ .yourWallet{
+  width: 15%;
+ }
+ .yourWallet p{
+  color: black;
+ }
  .select{
-  width: 40%;
+  width: 50%;
   text-align: center;
  }
- .sale-conteiner{
-  
+ .day-conteiner{
+  width: 15%;
   display: flex;
   flex-direction: column;
-  width: 20%;
-  height: 45%;
-  background-color: white;
-  border-radius: 20px;
-/*   box-shadow: ;
- */}
- .day-purchase{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 20%;
-  height: 45%;
-  background-color: white;
-  border-radius: 20px;
-/*   box-shadow: ;
- */}
-
- .convert{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
- }
+}
+.sale-tittle{
+  font-weight: bold;
+  font-size: 50px;
+  color: black;
+}
 .buy-now{
+  width: 15%;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 20%;
-  height: 45%;
-  background-color: white;
-  border-radius: 20px;
-/*   box-shadow: ;
- */
 }
 </style>
   

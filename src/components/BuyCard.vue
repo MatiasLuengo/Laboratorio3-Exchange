@@ -1,216 +1,241 @@
 <template>
-    <section id="nueva-compra">
-      <div class="conteiner">
-        <div class="buy-conteiner">
-          <h1 class="buy-tittle">Compra</h1>
-        </div>
-        <div class="body-conteiner">
-          <div class="buy-part">
-            <div class="tittle">Cryptomoneda a comprar</div>
-            <form class="form">
-              <input id="criptoMoney" type="string" class="cantidad" placeholder="Cantidad a comprar" @change="(e) => handlerChangeCryptoCount(e)"/>
-              <select class="select" @change="(e) => handlerChangeSelectCripto(e)">
-                <option value="">-</option>
-                <option v-for="elem in $store.state.topCryptos" :value="elem.symbol">
-                  <p>{{ elem.name }}</p>
-                </option>
-              </select>
-            </form>
-          </div>
-  
-          <div class="sale-conteiner">
-            <div class="">Tú pagas</div>
-            <div class="convert">
-              <p>
-                {{ store.state.convertedMoney }}
-              </p>
-            </div>
-          </div>
-  
-          <div class="day-purchase">
-            <div class="tittle">Día de compra</div>
-            <input id="diaCompra" type="date" class="pl-2" required />
-          </div>
-  
-          <div class="buy-now">
-            <button @click="($event) => handlerSubmit()">Comprar Ahora</button>
-          </div>
+  <section id="nueva-compra">
+    <div class="conteiner">
+      <div class="buy-conteiner">
+        <i class='bx bxs-chevron-right'></i>
+        <h1 class="buy-tittle">Compra</h1>
+      </div>
+      <div class="alertConteiner" v-if="errors">
+        <div class="alert" v-for="error in errors">
+          <p class="">{{error}}</p>
         </div>
       </div>
-    </section>
-  </template>
+      <div class="body-conteiner">
+        <div class="buy-part miniConteiner">
+          <div class="tittle">Cryptomoneda a comprar</div>
+          <form class="form" @submit.prevent="obtenerCotizacion">
+            <input id="volumen" v-model.number="volumen" type="string" class="cantidad" placeholder="Cantidad a comprar"/>
+            <select class="select" id="coin" v-model="coin">
+              <option selected disabled >Criptos..</option>
+              <option value="btc">BTC</option>
+              <option value="eth">ETH</option>
+              <option value="usdt">USDT</option>
+            </select>
+            <button>Optener Cotizacion</button>
+          </form>
+        </div>
+        <div class="sale-conteiner miniConteiner">
+          <div class="tittle">Tú pagas</div>
+            <div class="convert" v-if="yourBudget">
+              <p>$ {{  yourBudget }} </p>
+            </div>
+        </div>
+        <div class="day-purchase miniConteiner">
+          <div class="tittle">Día de compra</div>
+          <input  id="diaCompra" type="date" required />
+        </div>
+        <div class="buy-now miniConteiner">
+          <button @click="buy">Comprar Ahora</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
   
-  <script setup>
-  import Joi, { date } from "joi";
-  import userService from "../services/user.service";
-  import store from "../store";
-  
-  function handlerSubmit() {
-    //agarramos los valores de los inputs
-    let dayPurchase = document.getElementById("diaCompra").value;
-    dayPurchase = {
-      day: new Date(dayPurchase).getDate(),
-      month: new Date(dayPurchase).getMonth(),
-      year: new Date(dayPurchase).getFullYear(),
-      hour: new Date(dayPurchase).getHours(),
-      minute: new Date(dayPurchase).getMinutes(),
-    };
-    const criptoMoneyCount = store.state.criptoCount;
-    const criptoMoneyType = store.state.criptoSelected;
-    const criptoMoneyToPay = store.state.convertedMoney.replace("$ ", "").trim();
-  
-    const validObject = Joi.object({
-      type: Joi.string().required(),
-      amount: Joi.number().min(0).max(Number.MAX_VALUE).required(),
-      date: Joi.object({
-        day: Joi.number().min(0).max(31).required(),
-        month: Joi.number().min(0).max(12).required(),
-        year: Joi.number().min(2023).max(2023).required(),
-        hour: Joi.number().min(0).max(23).required(),
-        minute: Joi.number().min(0).max(59).required(),
-      }),
-      money: Joi.number().min(0).max(Number.MAX_VALUE).required(),
-    });
-    const { error, value } = validObject.validate({
-      type: criptoMoneyType,
-      amount: criptoMoneyCount,
-      date: dayPurchase,
-      money: criptoMoneyToPay,
-    });
-    if (error) {
-      let keyError = error.message.match(/"(\\.|[^"\\])*"/g);
-      const errorsToRender = {
-        amount: "La cantidad de criptomonedas ingresadas no son válidas",
-        date: "El dia ingresado es inválido o nulo.",
-        type: "Se debe seleccionar un tipo de criptomoneda a comprar",
-        money: "La cantidad de dinero a pagar es inválida",
-        default: "Ah ocurrido un error, intentelo mas tarde",
-      }; // Objecto-lista de todos los errores admitidos
-  
-      if (keyError) {
-        keyError = keyError.toString().replace(/"/g, "").split(".")[0]; // Separo la key del error de todo el mensaje.
-        alert(errorsToRender[keyError] || errorsToRender["default"]);
-        return;
+<script>
+import criptoYaInstance from '../services/criptoYa.connection.service';
+import store from "./../store";
+import userService from './../services/user.service';
+export default{
+  data(){
+      return{
+        coin: "",
+        volumen: null,
+        yourBudget: null,
+        errors: []
       }
-      alert(errorsToRender["default"]); // error default por si todo falla
-      return;
-    } else if (value.amount === 0) {
-      alert("La cantidad de criptomonedas ingresadas no son validas.");
-      return;
-    }
-  
-    userService
-      .createPurchase({
-        user_id: store.state.userId,
-        action: "purchase",
-        crypto_code: value.type,
-        crypto_amount: value.amount,
-        money: value.money,
-        datetime: `${value.date.day}-${value.date.month + 1}-${value.date.year} ${
-          value.date.hour
-        }:${value.date.minute}`,
-      })
-      .then(() => {
-        userService.getHistory(store.state.userId).then((history) => {
-          store.commit("changeUserHistory", history);
+    },
+    methods:{
+      obtenerCotizacion(){
+        criptoYaInstance.getCriptoData(this.coin, this.volumen)
+        .then(response => {
+          //let total = Number(response.ask)*Number(this.volumen);
+          let total = Number((Number(response.ask)*Number(this.volumen)).toFixed(2));
+
+          this.yourBudget = total;
+        })
+
+      }, 
+      buy(){
+        this.errors = [];
+        let dayPurchase = document.getElementById("diaCompra").value;
+        if (dayPurchase == "") {
+          this.errors.push("Es necesario la fecha de compra") ;
+        }
+        dayPurchase = {
+            day: new Date(dayPurchase).getDate(),
+            month: new Date(dayPurchase).getMonth(),
+            year: new Date(dayPurchase).getFullYear(),
+            hour: new Date(dayPurchase).getHours(),
+            minute: new Date(dayPurchase).getMinutes(),
+          };
+        if(dayPurchase.year < new Date().getFullYear() || 
+          dayPurchase.month < new Date().getMonth() ||
+          (dayPurchase.day +  1) < new Date().getDate()){
+          this.errors.push("La fecha no puede ser anterior al dia de hoy") ;
+        }
+        if(this.volumen == null){
+          this.errors.push("Es necesario la cantidad a comprar") ;
+        }if (this.coin == "") {
+          this.errors.push("Es necesario la cripto a comprar")  ;
+        }
+        if(!this.errors.length > 0){
+        store.commit("changeBudget", null)
+        criptoYaInstance.getCriptoData(this.coin, this.volumen)
+        .then(response => {
+          let total = Number((Number(response.ask)*Number(this.volumen)).toFixed(2));
+          store.commit("changeBudget", total)
+          this.yourBudget = total;
+        })
+        userService.createPurchase({
+            user_id: store.state.userId,
+            action: "purchase",
+            crypto_code: this.coin,
+            crypto_amount: this.volumen,
+            money: this.yourBudget,
+            datetime: `${dayPurchase.year}-${dayPurchase.month + 1}-${dayPurchase.day + 1} ${dayPurchase.hour}:${dayPurchase.minute}`,
+          })
+          .then(() => {
+            userService.getHistory(store.state.userId).then((history) => {
+              store.commit("changeUserHistory", history);
+            });
+          })   
+          .then(() => {
+          this.coin= "";
+          this.volumen= null;
+          this.yourBudget= null;
         });
-      }); //se cumple promesa
-  
-    alert("Compra de criptomoneda correcta");
-  }
-  
-  function handlerChangeCryptoCount(event) {
-    store.commit("changeCriptoCount", event.target.value);
-  }
-  
-  function handlerChangeSelectCripto(event) {
-    store.commit("changeCriptoSelected", event.target.value);
-  }
-  </script>
+        alert("Compra de criptomoneda correcta");
+      }
+      }}
+}
+</script>
   
 <style scoped>
-.conteiner{
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 50px;
-  background-color: lightskyblue;
+button{
+  cursor: pointer;
+  height: 40px;
+  width: 120px;
+  border-radius: 6px;
+  background-color: rgb(212, 238, 232);
 }
-.buy-conteiner{
+button:hover{
+  background-color: rgb(220, 241, 235);
+}
+.alertConteiner{
+  width: 50%;
+}
+.alert{
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
+  height: auto;
+  background-color: gainsboro;
+  margin: auto;
+  margin-bottom: 5px;
+}
+.alert p{
+  color: red;
+  font-size: small;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+#nueva-compra{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.conteiner{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 90%;
+  height: 300px;
+  margin: auto;
+  margin-top: 40px;
+  background-color: rgba(8, 161, 221, 0.10); /*para dar el sombreado*/
+  border-radius: 6px;
+}
+.buy-conteiner{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   width: 70%;
   height: 30%;
+  gap: 10px;
+}
+i{
+  font-size: 40px;
+  color: rgb(54, 255, 47);
 }
 .buy-tittle{
-  /* select-none */
   font-weight: bold;
   font-size: 50px;
   color: black;
 }
 .body-conteiner{
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  width: 70%;
-  height: 30%;
+  width: 85%;
+  height: 50%;
   gap: 40px;
 }
-.buy-part{
+.miniConteiner{
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 30%;
-  height: 45%;
-  background-color: white;
-  border-radius: 20px;
-/*   box-shadow: ;
- */}
+  width: auto;
+  height: 55px;
+  background-color: rgb(249, 249, 249);
+  border-radius: 6px;
+  padding: 10px 5px;
+  min-height: 45%;
+ }
  .tittle{
   width: 100%;
-  padding-left: 5px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  font-weight: bold;
  }
  .form{
-  /* outline-none*/
   display: flex;
-  padding-left: 5px;
+  gap: 5px;
  }
  .cantidad{
-  /* outline-none */
   width: 60%;
   text-align: center;
  }
  .select{
-  width: 40%;
+  width: 50%;
   text-align: center;
  }
  .sale-conteiner{
-  
-  display: flex;
-  flex-direction: column;
   width: 20%;
-  height: 45%;
-  background-color: white;
-  border-radius: 20px;
-/*   box-shadow: ;
- */}
+}
  .day-purchase{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 20%;
-  height: 45%;
-  background-color: white;
-  border-radius: 20px;
-/*   box-shadow: ;
- */}
 
+  width: 20%;
+}
  .convert{
   display: flex;
   justify-content: center;
@@ -218,15 +243,10 @@
   width: 100%;
   height: 100%;
  }
+ .convert p{
+  color: black;
+ }
 .buy-now{
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 20%;
-  height: 45%;
-  background-color: white;
-  border-radius: 20px;
-/*   box-shadow: ;
- */
 }
 </style>

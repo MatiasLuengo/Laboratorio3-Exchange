@@ -18,14 +18,14 @@
     height: 60rem;
 }
 .boton {
-border: 1px solid var(--principal); /*anchura, estilo y color borde*/
-padding: 10px 50px; /*espacio alrededor texto*/
-background-color: var(--principal); /*color botón*/
-color: #ffffff; /*color texto*/
-text-decoration: none; /*decoración texto*/
-text-transform:none; /*capitalización texto*/
-font-family: 'Helvetica', sans-serif; /*tipografía texto*/
-border-radius: 50px; /*bordes redondos*/
+    border: 1px solid var(--principal); /*anchura, estilo y color borde*/
+    padding: 10px 50px; /*espacio alrededor texto*/
+    background-color: rgb(106, 191, 245); /*color botón*/
+    color: #ffffff; /*color texto*/
+    text-decoration: none; /*decoración texto*/
+    text-transform:none; /*capitalización texto*/
+    font-family: 'Helvetica', sans-serif; /*tipografía texto*/
+    border-radius: 50px; /*bordes redondos*/
 }
 .bx{
     padding-right: 3rem;

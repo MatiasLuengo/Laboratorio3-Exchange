@@ -21,6 +21,16 @@ const routes = [
     path: '/panel',
     name: 'panel',
     component: () => import('../views/purchaseSaleView.vue')
+  },
+  {
+    path: '/historical',
+    name: 'historical',
+    component: () => import('../views/HistoricalView.vue')
+  },
+  {
+    path: '/analysis',
+    name: 'analysis',
+    component: () => import('../views/AnalysisView.vue')
   }
 ]
 

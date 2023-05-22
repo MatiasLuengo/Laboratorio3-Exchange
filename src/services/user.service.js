@@ -1,4 +1,5 @@
-import UtnInstance from "./Utn.connection.service";
+import UtnInstance from "./utn.connection.service";
+
 export default new (class UserService {
   async getHistory(userId) {
     const response = await UtnInstance.get(
@@ -8,6 +9,7 @@ export default new (class UserService {
   }
   async createPurchase(data) {
     const response = await UtnInstance.post("transactions", data, {});
+    console.log(response);
   }
   async createSale(data) {
     const response = await UtnInstance.post("transactions", data, {});
