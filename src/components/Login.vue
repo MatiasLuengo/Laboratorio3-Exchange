@@ -1,5 +1,4 @@
 <template>
-
 <div class="header__texto img-bg login-conteiner">
     <div id="signUpPart" class="container-form sign-up">
         <div class="welcome-back">
@@ -12,16 +11,15 @@
         <form class="form">
             <h2 class="create-account">Crear una cuenta</h2>
             <div class="icons">
-                <div class="border-icon">
+                <a href="https://www.instagram.com/" target="_blank" class="border-icon">
                     <i class='bx bxl-instagram-alt'></i>                        
-                </div>
-                <div class="border-icon">
+                </a>
+                <a href="https://www.google.com/" target="_blank" class="border-icon">
                     <i class='bx bxl-google'></i>
-                </div>
-                <div class="border-icon">
+                </a>
+                <a href="https://www.facebook.com/" target="_blank" class="border-icon">
                     <i class='bx bxl-facebook-circle' ></i>
-                </div>
-
+                </a>
             </div>
             <p class="free-account">Crea una cuenta gratis</p>
             <input type="text" placeholder="Nombre">
@@ -30,28 +28,30 @@
             <input type="button" value="Registrarse">
         </form>
     </div>
-
     <div class="container-form sign-in">
-        <form class="form">
+        <form class="form" @submit.prevent="onSubmit">
             <h2 class="create-account">Iniciar Sesión</h2>
             <div class="icons">
-                <div class="border-icon">
+                <a href="https://www.instagram.com/" target="_blank" class="border-icon">
                     <i class='bx bxl-instagram-alt'></i>                        
-                </div>
-                <div class="border-icon">
+                </a>
+                <a href="https://www.google.com/" target="_blank" class="border-icon">
                     <i class='bx bxl-google'></i>
-                </div>
-                <div class="border-icon">
+                </a>
+                <a href="https://www.facebook.com/" target="_blank" class="border-icon">
                     <i class='bx bxl-facebook-circle' ></i>
-                </div>
-
+                </a>
             </div>
             <p class="free-account">Ingresa aquí</p>
-            <input type="email" placeholder="Email">
+            <input type="text" placeholder="Email" id="id">
+            <div class="alertConteiner" v-if="errors">
+                <div class="alert" v-for="error in errors">
+                <p class="">{{error}}</p>
+                </div>
+            </div>
             <input type="password" placeholder="Contraseña">
-            <input type="button" value="Iniciar Sesión">
+            <button type="submit" id="getInto">Iniciar Sesión</button>
         </form>
-
         <div class="welcome-back">
             <div class="message">
                 <h2>Empieza a operar ahora</h2>
@@ -64,29 +64,94 @@
 </template>
 
 <script>
+import router from '@/router';
+import store from "../store/index";
+import UserService from "../services/user.service";
+
 export default {
     el: '#app',
-  name: 'login',
-  props: {
-    
-  }, methods:{
-    signUpBtn: function(){
-        const $btnSignIn = document.querySelector('.sign-in-btn'),
-            $btnSignUp = document.querySelector('.sign-up-btn'),
-            $signUp = document.querySelector('.sign-up'),
-            $signIn = document.querySelector('.sign-in');
-
-        document.addEventListener('click', e => {
-            if(e.target === $btnSignIn || e.target === $btnSignUp){
-                $signIn.classList.toggle('active');
-                $signUp.classList.toggle('active')
+    name: 'login',
+    props: {
+    },
+    data(){
+        return {
+            errors: []
+        }
+    },
+    methods:{
+        signUpBtn: function(){
+            const $btnSignIn = document.querySelector('.sign-in-btn'),
+                $btnSignUp = document.querySelector('.sign-up-btn'),
+                $signUp = document.querySelector('.sign-up'),
+                $signIn = document.querySelector('.sign-in');
+            document.addEventListener('click', e => {
+                if(e.target === $btnSignIn || e.target === $btnSignUp){
+                    $signIn.classList.toggle('active');
+                    $signUp.classList.toggle('active')
+                }
+            }
+            )
+        },
+        onSubmit(){
+            this.errors = [];
+            const userId = document.getElementById("id").value;
+            let letras="abcdefghyjklmnñopqrstuvwxyz";
+            let letras_mayusculas="ABCDEFGHYJKLMNÑOPQRSTUVWXYZ";
+            let numeros="0123456789";
+            let min = 6;
+            let max = 12;
+            if(userId == ""){
+                this.errors.push("Debe ingresar su ID");
+            }else{
+                if(userId.length < min){
+                this.errors.push("El Id debe contener al menos 6 caracteres alfanumericos");
+                }
+                if(userId.length > max){
+                    this.errors.push("El Id no debe superar los 12 caracteres alfanumericos");
+                }
+                let flagMin = false;
+                for(let i=0; i<userId.length; i++){
+                    if (letras.indexOf(userId.charAt(i),0)!=-1){
+                        flagMin = true;
+                    }
+                }
+                if(!flagMin){
+                    this.errors.push("El ID debe contener al menos una letra minúscula");
+                }
+                let flagMay = false;
+                for(let i=0; i<userId.length; i++){
+                    let flag = false;
+                    if (letras_mayusculas.indexOf(userId.charAt(i),0)!=-1){
+                        flagMay = true;
+                    }
+                }
+                if(!flagMay){
+                    this.errors.push("El ID debe contener al menos una letra mayúscula");
+                }
+                let flagNum = false;
+                for(let i=0; i<userId.length; i++){
+                    let flag = false;
+                    if (numeros.indexOf(userId.charAt(i),0)!=-1){
+                        flagNum = true;
+                    }
+                }
+                if(!flagNum){
+                    this.errors.push("El ID debe contener al menos un número");
+                }
+            }
+            if(this.errors.length == 0){
+                store.commit("changeUserId", userId);
+                store.commit("changeErrorAlert", false);
+                const history = UserService.getHistory(store.state.userId);
+                store.commit("changeUserHistory", history);
+                router.push("/panel");
+                return;
+            }else{
+                store.commit("changeErrorAlert", true);
             }
         }
-        )
-    }
-  }
+    },
 }
-
 </script>
 
 <style scoped>
@@ -97,6 +162,22 @@ export default {
     font-family: var(--primaryFont);
 }
 
+.alert{
+display: flex;
+justify-content: center;
+align-items: center;
+width: 90%;
+height: auto;
+background-color: gainsboro;
+margin: auto;
+margin-bottom: 15px;
+}
+.alert p{
+    color: red;
+    font-size: small;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
 .container-form {
     width: 90%;
     height: 90vh;
@@ -118,6 +199,10 @@ export default {
 .message h2 {
     font-size: 4rem;
     padding: 1rem 0;
+    color: #111c35;
+}
+.message p {
+    color: #111c35;
 }
 
 .message button {
@@ -137,12 +222,29 @@ export default {
 .message button:hover {
     background-color: #6464f8;
 }
+#getInto {
+    padding: 1rem;
+    font-weight: 400;
+    background-color: #4a4aee;
+    border-radius: 2rem;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-top: 2rem;
+    transition: all .3s ease-in;
+    color: #fff;
+}
+
+#getInto:hover {
+    background-color: #6464f8;
+}
 
 .form {
     width: 400px;
     padding: 1rem;
     margin: 2rem;
-    background-color: rgb(51, 51, 51, 0.602);
+    background-color: rgb(106, 191, 245);
     text-align: center;
 }
 
@@ -169,6 +271,7 @@ export default {
     border-radius: 50%;
     font-size: 1.5rem;
     transition: all .3s ease-in;
+    text-decoration: none;
 }
 
 .border-icon:hover {

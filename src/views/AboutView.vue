@@ -21,6 +21,9 @@
     width: 90%;
     margin: 0 auto;
 }
+.contenedor h2{
+    color: #111c35;
+}
 .flex-contein {
     display: flex;
     justify-content: center;
@@ -33,7 +36,7 @@
 
 h2 span {
     font-size: 4.5rem;
-    color: #51a0df;
+    color: rgb(106, 191, 245);
     font-weight: bold;
 }
 </style>

@@ -6,7 +6,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
 import Services from '@/components/Services.vue'
 import Login from '@/components/Login.vue'
 
@@ -17,6 +16,4 @@ export default {
     Login
   }
 }
-
-
 </script>

@@ -16,6 +16,21 @@ const routes = [
     path: '/contact',
     name: 'contact',
     component: () => import('../views/ContactView.vue')
+  },
+  {
+    path: '/panel',
+    name: 'panel',
+    component: () => import('../views/purchaseSaleView.vue')
+  },
+  {
+    path: '/historical',
+    name: 'historical',
+    component: () => import('../views/HistoricalView.vue')
+  },
+  {
+    path: '/analysis',
+    name: 'analysis',
+    component: () => import('../views/AnalysisView.vue')
   }
 ]
 
