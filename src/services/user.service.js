@@ -1,4 +1,4 @@
-import UtnInstance from "./utn.connection.service";
+import UtnInstance from "./Utn.connection.service";
 
 export default new (class UserService {
   async getHistory(userId) {

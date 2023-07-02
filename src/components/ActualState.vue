@@ -22,7 +22,7 @@
                     <div class="titulos" >
                         <p class="tituloCentrado"> TOTAL: </p>
                         <p class="tituloCentrado"></p>
-                        <p class="tituloCentrado"> $ {{ totalCripto }} </p>
+                        <p class="tituloCentrado"> $ {{ sumaTotal }} </p>
                     </div>
                 </div>
             </div>
@@ -67,7 +67,7 @@
                     for(let index = 0; index < store.state.topCriptos.length; index++){
                         if(coin == store.state.topCriptos[index].name){
                             let cadaTotal = volumen * store.state.topCriptos[index].salePrice;
-                            //this.sumaTotal += cadaTotal;
+                            this.sumaTotal += cadaTotal;
                             return cadaTotal;
                         }
                     } 
