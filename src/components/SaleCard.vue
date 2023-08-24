@@ -14,7 +14,7 @@
           <div class="sale-part miniConteiner">
             <div class="tittle">Cryptomoneda a vender</div>
             <form class="form" @submit.prevent="obtenerCotizacionVenta">
-              <input id="criptoMoneySale" type="string" v-model.number="volumen" class="cantidad" placeholder="Cantidad a vender"/>
+              <input id="criptoMoneySale" type="number" step="any" min="0" v-model.number="volumen" class="cantidad" placeholder="Cantidad a vender"/>
               <select class="select" id="coin" v-model="coin" @change="handlerChangeSelectCriptoSale($event)">
                 <option selected disabled >Criptos..</option>
                 <option value="btc">BTC</option>
@@ -92,12 +92,18 @@
           }
           if(this.volumen == null){
             this.errors.push("Es necesario la cantidad a vender") ;
+          }
+          if(this.volumen <= 0){
+            this.errors.push("La cantidad a vender debe ser mayor a cero") ;
           }if (this.coin == "") {
             this.errors.push("Es necesario la cripto a vender")  ;
           }
           if(this.wallet < this.volumen){
             this.errors.push("No tiene esa cantidad en la cartera")  ;
           }
+          if (this.yourBudget == null) {
+          this.errors.push("Debes obtener una cotizacion primero")  ;
+      }
           if(!this.errors.length > 0){
           store.commit("changeBudget", null)
           criptoYaInstance.getCriptoData(this.coin, this.volumen)
