@@ -14,7 +14,7 @@
         <div class="buy-part miniConteiner">
           <div class="tittle">Cryptomoneda a comprar</div>
           <form class="form" @submit.prevent="obtenerCotizacion">
-            <input id="volumen" v-model.number="volumen" type="string" class="cantidad" placeholder="Cantidad a comprar"/>
+            <input id="volumen" v-model.number="volumen" type="number" step="any" min="0" class="cantidad" placeholder="Cantidad a comprar"/>
             <select class="select" id="coin" v-model="coin">
               <option selected disabled >Criptos..</option>
               <option value="btc">BTC</option>
@@ -59,13 +59,10 @@ export default{
       obtenerCotizacion(){
         criptoYaInstance.getCriptoData(this.coin, this.volumen)
         .then(response => {
-          //let total = Number(response.ask)*Number(this.volumen);
           let total = Number((Number(response.ask)*Number(this.volumen)).toFixed(2));
-
           this.yourBudget = total;
         })
-
-      }, 
+      },
       buy(){
         this.errors = [];
         let dayPurchase = document.getElementById("diaCompra").value;
@@ -86,9 +83,16 @@ export default{
         }
         if(this.volumen == null){
           this.errors.push("Es necesario la cantidad a comprar") ;
-        }if (this.coin == "") {
+        }
+        if(this.volumen <= 0){          
+          this.errors.push("La cantidad a comprar debe ser mayor a cero") ;
+        }
+        if (this.coin == "") {
           this.errors.push("Es necesario la cripto a comprar")  ;
         }
+        if (this.yourBudget == null) {
+          this.errors.push("Debes obtener una cotizacion primero")  ;
+      }
         if(!this.errors.length > 0){
         store.commit("changeBudget", null)
         criptoYaInstance.getCriptoData(this.coin, this.volumen)
