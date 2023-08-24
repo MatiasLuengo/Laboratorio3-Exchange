@@ -16,15 +16,15 @@
                     <p class="tituloCentrado"> {{ elem.amount }} </p>
                     <!-- <p class="tituloCentrado"> $ {{ getTotalCash(elem.name, elem.amount) }} </p> -->
                     <!-- <p class="tituloCentrado" @click="getTotalCash(elem.name, elem.amount)"> $ {{ cadaTotal }} </p> -->
-                    <p class="tituloCentrado"> $ {{ nuevaFuncion(elem.name, elem.amount) }} </p>
+                    <p class="tituloCentrado"> $ {{ getCash(elem.name, elem.amount) }} </p>
                 </div>
-                <div >
+<!--                 <div >
                     <div class="titulos" >
                         <p class="tituloCentrado"> TOTAL: </p>
                         <p class="tituloCentrado"></p>
                         <p class="tituloCentrado"> $ {{ sumaTotal }} </p>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
     </section>
@@ -52,7 +52,7 @@
             }
             },
             methods:{
-                getTotalCash(coin, volumen){
+                /* getTotalCash(coin, volumen){
                     this.total = null;
                     criptoYaInstance.getCriptoData(coin, 1)
                     .then(response =>{
@@ -62,8 +62,8 @@
                         this.total = this.total + suma;
                         return suma;
                     })
-                },
-                nuevaFuncion(coin, volumen){
+                }, */
+                getCash(coin, volumen){
                     for(let index = 0; index < store.state.topCriptos.length; index++){
                         if(coin == store.state.topCriptos[index].name){
                             let cadaTotal = volumen * store.state.topCriptos[index].salePrice;
@@ -74,7 +74,7 @@
                 }
             },
             computed:{
-                totalCripto(){
+/*                 totalCripto(){
                     console.log(store.state.actualState);
                     let total = 0;
                     for(let index = 0; index < store.state.actualState.length; index++){
@@ -86,7 +86,7 @@
                     }
                     this.sumaTotal = total;
                     return total;
-                }
+                } */
             } 
     }
 </script>
