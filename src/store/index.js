@@ -90,7 +90,7 @@ const store = createStore({
           analiticsWallet[history.crypto_code].value += history.action == "purchase" ? Number(history.money) * -1 : Number(history.money);
         }
       });
-      console.log(analiticsWallet);
+      //console.log(analiticsWallet);
       state.analiticsState = analiticsWallet;
     },
   }
