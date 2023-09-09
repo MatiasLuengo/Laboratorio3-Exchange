@@ -4,7 +4,7 @@ import userService from "./user.service";
 
 export default new (class CryptoService {
     async getCrypto() {
-        let criptos = ["btc", "eth", "usdt"];
+        let criptos = ["btc", "eth", "usdt", "dai", "doge", "dot", "eos" , "link" , "ltc" , "mana" , "paxg" , "sand" , "shib" , "slp" , "sol" , "trx" , "uni" , "xlm" , "xrp"];
         let criptosData = [];
         for (let index = 0; index < criptos.length; index++) {
             try {

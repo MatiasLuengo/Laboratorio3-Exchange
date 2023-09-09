@@ -23,6 +23,22 @@
                 <option value="btc">BTC</option>
                 <option value="eth">ETH</option>
                 <option value="usdt">USDT</option>
+                <option value="dai">DAI</option>
+                <option value="doge">DOGE</option>
+                <option value="dot">DOT</option>
+                <option value="eos">EOS</option>
+                <option value="link">LINK</option>
+                <option value="ltc">LTC</option>
+                <option value="mana">MANA</option>
+                <option value="paxg">PAXG</option>
+                <option value="sand">SAND</option>
+                <option value="shib">SHIB</option>
+                <option value="slp">SLP</option>
+                <option value="sol">SOL</option>
+                <option value="trx">TRX</option>
+                <option value="uni">UNI</option>
+                <option value="xlm">XLM</option>
+                <option value="xrp">XRP</option>
               </select>
               <button>Optener Cotizacion</button>
             </form>
