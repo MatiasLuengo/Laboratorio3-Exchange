@@ -25,9 +25,12 @@
     color: #111c35;
 }
 .flex-contein {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+.flex-contein img{
+    width: 90%;
+    max-width: 500px;
 }
 
 .padding-top {

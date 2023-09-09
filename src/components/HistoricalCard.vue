@@ -1,59 +1,61 @@
 <template>
     <section id="movimientos">
-        <div class="conteiner">
-            <div class="dataTable">
-            <div class="titulos">
-                <h2 class="tituloCentrado">Fecha alta</h2>
-                <h2 class="tituloCentrado">Monto $ARS</h2>
-                <h2 class="tituloCentrado">Compra/Venta</h2>
-                <h2 class="tituloCentrado">Cantidad monedas</h2>
-                <h2 class="tituloCentrado">Tipo criptomoneda</h2>
-                <h2 class="tituloCentrado">Modificar</h2>
-            </div>
-            </div>
-            <div class="dataTable" v-if="store.state.userHistory" >
-                <div class="data" v-for="elem in store.state.userHistory">
-                    <p class="tituloCentrado"> {{ elem.datetime }} </p>
-                    <p class="tituloCentrado"> $ {{ elem.money }} </p>
-                    <p class="tituloCentrado"> {{ elem.action == "purchase" ? "Compra" : "Venta" }} </p>
-                    <p class="tituloCentrado"> {{ elem.crypto_amount }} </p>
-                    <p class="tituloCentrado"> {{ elem.crypto_code.toUpperCase() }} </p>
-                    <div class="tituloCentrado buttons">
-                        <button class="buttonEdit" @click="handlerChangeEditID(elem._id)">
-                            <p class="" >Editar</p>
-                        </button>
-                        <button class="buttonDelete" @click="handlerDelete(elem._id)">
-                            <p class="">Eliminar</p>
-                        </button>
+        <div class="scroll-container">
+            <div class="conteiner">
+                <div class="dataTable">
+                    <div class="titulos">
+                        <h2 class="tituloCentrado">Fecha alta</h2>
+                        <h2 class="tituloCentrado">Monto $ARS</h2>
+                        <h2 class="tituloCentrado">Compra/Venta</h2>
+                        <h2 class="tituloCentrado">Cantidad monedas</h2>
+                        <h2 class="tituloCentrado">Tipo criptomoneda</h2>
+                        <h2 class="tituloCentrado">Modificar</h2>
                     </div>
                 </div>
-                <div v-if="store.state.editID" class="editConteiner">
-                    <p class="flexCenter black"> Usted está editando el registro: {{ store.state.editID }}</p>
-                    <div class="alertConteiner" v-if="errors">
-                        <div class="alert" v-for="error in errors">
-                            <p class="">{{error}}</p>
+                <div class="dataTable" v-if="store.state.userHistory" >
+                    <div class="data" v-for="elem in store.state.userHistory">
+                        <p class="tituloCentrado"> {{ elem.datetime }} </p>
+                        <p class="tituloCentrado"> $ {{ elem.money.toLocaleString() }} </p>
+                        <p class="tituloCentrado"> {{ elem.action == "purchase" ? "Compra" : "Venta" }} </p>
+                        <p class="tituloCentrado"> {{ elem.crypto_amount.toLocaleString() }} </p>
+                        <p class="tituloCentrado"> {{ elem.crypto_code.toUpperCase() }} </p>
+                        <div class="tituloCentrado buttons">
+                            <button class="buttonEdit" @click="handlerChangeEditID(elem._id)">
+                                <p class="" >Editar</p>
+                            </button>
+                            <button class="buttonDelete" @click="handlerDelete(elem._id)">
+                                <p class="">Eliminar</p>
+                            </button>
                         </div>
                     </div>
-                    <div class="flexCenter">
-                        <form @submit.prevent="handlerEdit">
-                            <div class="dataEdit">
-                                <input type="text" id="mount" v-model.number="volumen" placeholder="Cantidad de Criptomonedas" class=""/>
-                                <input type="text" id="money" v-model.number="volumenArs" placeholder="Cantidad de $ARS" class=""/>
-                                <select id="type" v-model="coin" class="">
-                                    <option selected disabled >Criptos..</option>
-                                    <option value="btc">BTC</option>
-                                    <option value="eth">ETH</option>
-                                    <option value="usdt">USDT</option>
-                                </select>
+                    <div v-if="store.state.editID" class="editConteiner">
+                        <p class="flexCenter black"> Usted está editando el registro: {{ store.state.editID }}</p>
+                        <div class="alertConteiner" v-if="errors">
+                            <div class="alert" v-for="error in errors">
+                                <p class="">{{error}}</p>
                             </div>
-                            <div class="flexCenter cancelConfirm">
-                                <button type="submit" class="buttonConfirm">Editar</button>
-                                <button class="flexCenter buttonCancel" @click="Cancel">Cancelar</button>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="flexCenter">
+                            <form @submit.prevent="handlerEdit">
+                                <div class="dataEdit">
+                                    <input type="text" id="mount" v-model.number="volumen" placeholder="Cantidad de Criptomonedas" class=""/>
+                                    <input type="text" id="money" v-model.number="volumenArs" placeholder="Cantidad de $ARS" class=""/>
+                                    <select id="type" v-model="coin" class="">
+                                        <option selected disabled >Criptos..</option>
+                                        <option value="btc">BTC</option>
+                                        <option value="eth">ETH</option>
+                                        <option value="usdt">USDT</option>
+                                    </select>
+                                </div>
+                                <div class="flexCenter cancelConfirm">
+                                    <button type="submit" class="buttonConfirm">Editar</button>
+                                    <button class="flexCenter buttonCancel" @click="Cancel">Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
+                </div>
+                </div> 
             </div>
-            </div> 
         </div>
     </section>
 </template>
@@ -135,9 +137,25 @@
 </script>
 
 <style scoped>
+#movimientos{
+    display: flex;
+    flex-direction: column;
+    min-height: 600px;
+    padding-top: 40px;
+    background-image: linear-gradient(to top, rgb(106, 191, 245) 0%, #ffffff 100%);
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Inter Tight', sans-serif;
+    overflow: hidden;
+}
+.scroll-container {
+    overflow-x: auto;
+    white-space: nowrap;
+}
 .conteiner{
     margin-left: 40px;
     margin-right: 40px;
+    min-width: 1280px;
 }
 .cancelConfirm{
     display: flex;
@@ -169,26 +187,26 @@ form{
     gap: 10px;
 }
 .alertConteiner{
-  width: 50%;
-  margin: auto;
-  margin-bottom: 15px;
+    width: 50%;
+    margin: auto;
+    margin-bottom: 15px;
 }
 .alert{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: auto;
-  background-color: gainsboro;
-  margin: auto;
-  margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    background-color: gainsboro;
+    margin: auto;
+    margin-bottom: 5px;
 }
 .alert p{
-  color: red;
-  font-size: small;
-  margin-top: 5px;
-  margin-bottom: 5px;
+    color: red;
+    font-size: small;
+    margin-top: 5px;
+    margin-bottom: 5px;
 }
 .flexCenter{
     display: flex;
@@ -249,17 +267,6 @@ form{
 .buttonCancel:hover{
     background-color: rgb(255, 87, 87);
 }
-#movimientos{
-    display: flex;
-    flex-direction: column;
-    min-height: 600px;
-    padding-top: 40px;
-    background-image: linear-gradient(to top, rgb(106, 191, 245) 0%, #ffffff 100%); /*DEGRADADO*/
-    margin: 0;
-    box-sizing: border-box;
-    font-family: 'Inter Tight', sans-serif;
-}
-
 .titulos{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;

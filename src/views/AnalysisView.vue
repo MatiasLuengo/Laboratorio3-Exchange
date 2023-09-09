@@ -17,5 +17,11 @@ import AnaliticCard from "../components/AnaliticCard.vue";
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter Tight', sans-serif;
+    padding: 40px 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    row-gap: 30px;
+    min-height: 600px;
 }
 </style>
