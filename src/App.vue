@@ -100,10 +100,27 @@ Body{
 .nav-bg{
     background-color: var(--principal);
     padding-top: 1rem;
+    
 }
 .nav-grid{
-    display: grid;
-    grid-template-columns: 10% 60% 30%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    row-gap: 20px;
+    justify-content: center;
+    column-gap: 20px;
+    align-items: center;
+    padding-bottom: 20px;
+}
+@media (min-width: 480px) {
+    .nav-grid{
+        flex-direction: row;
+    }
+}
+@media (min-width: 1030px) {
+    .nav-grid{
+        justify-content: space-between;
+    }
 }
 
 .nav-bg a{
@@ -118,13 +135,9 @@ Body{
     background-image: url(../src/assets/444.png);
     background-repeat: no-repeat;
     background-size: cover;
-    /*padding-bottom: 25rem;*/
-    height: 40rem;
+    height: auto;
 }
-.header__texto{
-    color: var(--blanco);
-    padding-top: 0.5rem;
-}
+
 .bottom{
     padding-top: 15rem;
 }
@@ -154,18 +167,6 @@ Body{
     background-color: var(--blanco);
     transition: background-color 1s ease-in;
 }
-@media (min-width: 768px) {
-    .servicios{
-        padding-top: 3rem;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-    }
-    
-}
-.servicio{
-    text-align: center;
-    color: var(--blanco);
-}
 footer{
     padding-top: 3rem;
     padding-bottom: 3rem;
@@ -194,7 +195,7 @@ img{
     justify-content: flex-end;
     padding-bottom: 0.5rem;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
 }
 @media (min-width: 480px) {
     .primary-nav{
@@ -227,7 +228,8 @@ img{
     justify-content: center;
     padding-bottom: 0.5rem;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
+    text-wrap: nowrap;
 }
 @media (min-width: 480px) {
     .secondary-nav{

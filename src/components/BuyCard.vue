@@ -11,32 +11,38 @@
         </div>
       </div>
       <div class="body-conteiner">
+
         <div class="buy-part miniConteiner">
-          <div class="tittle">Cryptomoneda a comprar</div>
-          <form class="form" @submit.prevent="obtenerCotizacion">
-            <input id="volumen" v-model.number="volumen" type="number" step="any" min="0" class="cantidad" placeholder="Cantidad a comprar"/>
-            <select class="select" id="coin" v-model="coin">
-              <option selected disabled >Criptos..</option>
-              <option value="btc">BTC</option>
-              <option value="eth">ETH</option>
-              <option value="usdt">USDT</option>
-            </select>
-            <button>Optener Cotizacion</button>
-          </form>
-        </div>
-        <div class="sale-conteiner miniConteiner">
-          <div class="tittle">Tú pagas</div>
-            <div class="convert" v-if="yourBudget">
-              <p>$ {{  yourBudget }} </p>
+
+          <div>
+            <p class="tittle">Cryptomoneda a comprar</p>
+            <form class="form" @submit.prevent="obtenerCotizacion">
+              <input id="volumen" v-model.number="volumen" type="number" step="any" min="0" placeholder="Cantidad a comprar"/>
+              <select id="coin" v-model="coin">
+                <option selected disabled >Criptos...</option>
+                <option value="btc">BTC</option>
+                <option value="eth">ETH</option>
+                <option value="usdt">USDT</option>
+              </select>
+              <button>Optener Cotizacion</button>
+            </form>
+
+            <div class="sale-conteiner" v-if="yourBudget">
+              <p class="tittle">Tú pagas</p>
+              <div class="convert" >
+                  <p>$ {{  yourBudget.toLocaleString() }} </p>
+              </div>
             </div>
+          </div>
         </div>
-        <div class="day-purchase miniConteiner">
-          <div class="tittle">Día de compra</div>
-          <input  id="diaCompra" type="date" required />
-        </div>
-        <div class="buy-now miniConteiner">
+        <!-- <div class="miniConteiner">
+          <p class="tittle">Día de compra</p>
+          <input id="diaCompra" type="date" required />
+        </div> -->
+        <div class="miniConteiner">
           <button @click="buy">Comprar Ahora</button>
         </div>
+
       </div>
     </div>
   </section>
@@ -57,30 +63,32 @@ export default{
     },
     methods:{
       obtenerCotizacion(){
+        this.errors = [];
+          if(this.volumen == null){
+            this.errors.push("Es necesario la cantidad a cotizar") ;
+          }
+          if(this.volumen <= 0){
+            this.errors.push("La cantidad a cotizar debe ser mayor a cero") ;
+          }if (this.coin == "") {
+            this.errors.push("Es necesario la cripto para cotizar")  ;
+          }
+          if(!this.errors.length > 0){
         criptoYaInstance.getCriptoData(this.coin, this.volumen)
         .then(response => {
           let total = Number((Number(response.ask)*Number(this.volumen)).toFixed(2));
           this.yourBudget = total;
         })
+      }
       },
       buy(){
         this.errors = [];
-        let dayPurchase = document.getElementById("diaCompra").value;
-        if (dayPurchase == "") {
-          this.errors.push("Es necesario la fecha de compra") ;
-        }
-        dayPurchase = {
-            day: new Date(dayPurchase).getDate(),
-            month: new Date(dayPurchase).getMonth(),
-            year: new Date(dayPurchase).getFullYear(),
-            hour: new Date(dayPurchase).getHours(),
-            minute: new Date(dayPurchase).getMinutes(),
+        let dayPurchase = {
+            day: new Date().getDate(),
+            month: new Date().getMonth(),
+            year: new Date().getFullYear(),
+            hour: new Date().getHours(),
+            minute: new Date().getMinutes(),
           };
-        if(dayPurchase.year < new Date().getFullYear() || 
-          dayPurchase.month < new Date().getMonth() ||
-          (dayPurchase.day +  1) < new Date().getDate()){
-          this.errors.push("La fecha no puede ser anterior al dia de hoy") ;
-        }
         if(this.volumen == null){
           this.errors.push("Es necesario la cantidad a comprar") ;
         }
@@ -127,28 +135,28 @@ export default{
   
 <style scoped>
 button{
+  font-weight: bold;
   cursor: pointer;
   height: 40px;
   width: 120px;
   border-radius: 6px;
-  background-color: rgb(212, 238, 232);
+  background-color: rgb(154, 255, 117);
 }
 button:hover{
-  background-color: rgb(220, 241, 235);
+  background-color: rgb(111, 209, 75);
 }
 .alertConteiner{
-  width: 50%;
+  width: 100%;
 }
 .alert{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  text-align: center;
+  width: 40%;
+  min-width: 200px;
   height: auto;
   background-color: gainsboro;
   margin: auto;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
+  padding: 1px 4px;
 }
 .alert p{
   color: red;
@@ -156,23 +164,16 @@ button:hover{
   margin-top: 5px;
   margin-bottom: 5px;
 }
-#nueva-compra{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
 .conteiner{
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 90%;
-  height: 300px;
-  margin: auto;
-  margin-top: 40px;
-  background-color: rgba(8, 161, 221, 0.10); /*para dar el sombreado*/
+  width: 95%;
+  background-color: rgba(8, 161, 221, 0.10);
   border-radius: 6px;
+  padding-bottom: 20px;
+  margin: 0 auto;
 }
 .buy-conteiner{
   display: flex;
@@ -180,65 +181,82 @@ button:hover{
   justify-content: center;
   align-items: center;
   width: 70%;
-  height: 30%;
+  height: auto;
   gap: 10px;
+}
+.buy-conteiner h1{
+  font-weight: bold;
+  font-size: 50px;
+  color: black;
+  margin: 20px 0;
 }
 i{
   font-size: 40px;
   color: rgb(54, 255, 47);
 }
-.buy-tittle{
-  font-weight: bold;
-  font-size: 50px;
-  color: black;
-}
 .body-conteiner{
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  width: 85%;
+  width: 100%;
   height: 50%;
-  gap: 40px;
+  gap: 10px;
 }
 .miniConteiner{
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: auto;
-  height: 55px;
+  width: 40%;
+  min-width: 200px;
+  height: auto;
   background-color: rgb(249, 249, 249);
   border-radius: 6px;
   padding: 10px 5px;
-  min-height: 45%;
+  min-height: 80px;
+ }
+ #diaCompra{
+  margin-top: 10px;
  }
  .tittle{
   width: 100%;
-  margin: auto;
+  margin: 0 auto;
   display: flex;
   justify-content: center;
-  padding-top: 6px;
-  padding-bottom: 6px;
   font-weight: bold;
+  color: black;
  }
  .form{
   display: flex;
-  gap: 5px;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
  }
- .cantidad{
-  width: 60%;
+ .form input{
+  max-width: 160px;
   text-align: center;
+  min-height: 35px;
  }
- .select{
-  width: 50%;
+ .form select{
+  min-width: 120px;
   text-align: center;
+  min-height: 40px;
+ }
+ .form button{
+  min-height: 35px;
  }
  .sale-conteiner{
-  width: 20%;
-}
- .day-purchase{
-
-  width: 20%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(240, 240, 240);
+  padding-top: 10px;
+  border-radius: 6px;
 }
  .convert{
   display: flex;
@@ -250,7 +268,5 @@ i{
  .convert p{
   color: black;
  }
-.buy-now{
-  width: 20%;
-}
+
 </style>

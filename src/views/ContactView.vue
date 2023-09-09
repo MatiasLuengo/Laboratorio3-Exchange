@@ -14,18 +14,17 @@
     background-image: url(../assets/fondo-elegante-textura-blanca_23-2148438405.webp);
     background-repeat: no-repeat;
     background-size: cover;
-    /*padding-bottom: 25rem;*/
     height: 60rem;
 }
 .boton {
-    border: 1px solid var(--principal); /*anchura, estilo y color borde*/
-    padding: 10px 50px; /*espacio alrededor texto*/
-    background-color: rgb(106, 191, 245); /*color botón*/
-    color: #ffffff; /*color texto*/
-    text-decoration: none; /*decoración texto*/
-    text-transform:none; /*capitalización texto*/
-    font-family: 'Helvetica', sans-serif; /*tipografía texto*/
-    border-radius: 50px; /*bordes redondos*/
+    border: 1px solid var(--principal);
+    padding: 10px 50px;
+    background-color: rgb(106, 191, 245);
+    color: #ffffff;
+    text-decoration: none;
+    text-transform:none;
+    font-family: 'Helvetica', sans-serif;
+    border-radius: 50px;
 }
 .bx{
     padding-right: 3rem;
@@ -34,8 +33,8 @@
 .conteiner{
     display: flex;
     flex-direction: column;
-    max-width: 120rem;
-    width: 50%;
+    max-width: 620px;
+    width: 90%;
     margin: 0 auto;
     padding-top: 7rem;
 }

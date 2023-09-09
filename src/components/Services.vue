@@ -30,3 +30,24 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.servicios{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 30px auto;
+}
+.servicio{
+    text-align: center;
+    color: var(--blanco);
+    
+}
+.servicio img{
+    max-width: 200px;
+}
+.servicio h3{
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+</style>
