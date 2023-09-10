@@ -193,9 +193,8 @@ img{
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding-bottom: 0.5rem;
     align-items: center;
-    gap: 10px;
+    gap: 15px;
 }
 @media (min-width: 480px) {
     .primary-nav{
@@ -205,7 +204,6 @@ img{
 .primary-nav a{
     font-size: 2rem;
     font-weight: 700;
-    margin-left: 2rem;
 }
 .primary-nav a:focus{
     color: var(--secundario);

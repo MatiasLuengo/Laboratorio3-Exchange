@@ -9,11 +9,10 @@ export default new (class UserService {
   }
   async createPurchase(data) {
     const response = await UtnInstance.post("transactions", data, {});
-    console.log(response);
   }
   async createSale(data) {
     const response = await UtnInstance.post("transactions", data, {});
-    return response.data;
+    /* return response.data; */
   }
   async deleteHistory(id) {
     const response = await UtnInstance.delete(`transactions/${id}`);
